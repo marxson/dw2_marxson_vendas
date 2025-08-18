@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MarketPlace - Seu Shopping Online</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="logo">
+                    <h1>MarketPlace</h1>
+                </div>
+                <div class="search-bar">
+                    <input type="text" id="search-input" placeholder="O que você está procurando?">
+                    <button id="search-button"><i class="fas fa-search"></i></button>
+                </div>
+                <div class="nav-icons">
+                    <div class="cart-icon" onclick="toggleCarrinho()">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span id="cart-count">0</span>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <div class="categories">
+            <button class="category-btn active" data-category="todos">Todos</button>
+            <button class="category-btn" data-category="eletronicos">Eletrônicos</button>
+            <button class="category-btn" data-category="moda">Moda</button>
+            <button class="category-btn" data-category="casa">Casa</button>
+        </div>
+
+        <section id="produtos" class="produtos-container">
+            <div class="produtos-grid" id="produtos-grid">
+                <!-- Produtos serão inseridos aqui via JavaScript -->
+            </div>
+        </section>
+
+        <div id="carrinho-sidebar" class="carrinho-sidebar">
+            <div class="carrinho-header">
+                <h2>Seu Carrinho</h2>
+                <button onclick="toggleCarrinho()" class="close-btn">&times;</button>
+            </div>
+            <div id="carrinho-items">
+                <!-- Items do carrinho serão inseridos aqui -->
+            </div>
+            <div class="carrinho-total">
+                <h3>Total: R$ <span id="total">0.00</span></h3>
+                <button id="finalizar-compra" class="btn-finalizar">Finalizar Compra</button>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Atendimento</h3>
+                <ul>
+                    <li>Central de Ajuda</li>
+                    <li>Compra Segura</li>
+                    <li>Fale Conosco</li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Redes Sociais</h3>
+                <div class="social-icons">
+                    <i class="fab fa-facebook"></i>
+                    <i class="fab fa-instagram"></i>
+                    <i class="fab fa-twitter"></i>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 MarketPlace. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <div id="overlay" class="overlay"></div>
+    <script src="script.js"></script>
+</body>
+</html>
