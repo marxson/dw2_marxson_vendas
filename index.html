@@ -38,7 +38,83 @@
 
         <section id="produtos" class="produtos-container">
             <div class="produtos-grid" id="produtos-grid">
-                <!-- Produtos serão inseridos aqui via JavaScript -->
+                <!-- Produto 1: Smartphone -->
+                <div class="produto-card" data-categoria="eletronicos">
+                    <img src="imagen/Smartphone XYZ.jpg" alt="Smartphone XYZ">
+                    <div class="produto-info">
+                        <h3>Smartphone XYZ</h3>
+                        <p>Smartphone último modelo com câmera de alta resolução</p>
+                        <div class="produto-preco">R$ 1.299,99</div>
+                        <button onclick="adicionarAoCarrinho(1)" class="btn-comprar">
+                            Adicionar ao Carrinho
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Produto 2: Notebook -->
+                <div class="produto-card" data-categoria="eletronicos">
+                    <img src="imagen/Notebook Pro.jpg" alt="Notebook Pro">
+                    <div class="produto-info">
+                        <h3>Notebook Pro</h3>
+                        <p>Notebook profissional com processador de última geração</p>
+                        <div class="produto-preco">R$ 4.499,99</div>
+                        <button onclick="adicionarAoCarrinho(2)" class="btn-comprar">
+                            Adicionar ao Carrinho
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Produto 3: Camiseta -->
+                <div class="produto-card" data-categoria="moda">
+                    <img src="imagen/Camiseta Casual.jpg" alt="Camiseta Casual">
+                    <div class="produto-info">
+                        <h3>Camiseta Casual</h3>
+                        <p>Camiseta confortável para o dia a dia</p>
+                        <div class="produto-preco">R$ 49,99</div>
+                        <button onclick="adicionarAoCarrinho(3)" class="btn-comprar">
+                            Adicionar ao Carrinho
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Produto 4: Tênis -->
+                <div class="produto-card" data-categoria="moda">
+                    <img src="imagen/Tênis Esportivo.jpg" alt="Tênis Esportivo">
+                    <div class="produto-info">
+                        <h3>Tênis Esportivo</h3>
+                        <p>Tênis ideal para práticas esportivas</p>
+                        <div class="produto-preco">R$ 199,99</div>
+                        <button onclick="adicionarAoCarrinho(4)" class="btn-comprar">
+                            Adicionar ao Carrinho
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Produto 5: Liquidificador -->
+                <div class="produto-card" data-categoria="casa">
+                    <img src="imagen/Liquidificador Multi.jpg" alt="Liquidificador Multi">
+                    <div class="produto-info">
+                        <h3>Liquidificador Multi</h3>
+                        <p>Liquidificador com múltiplas velocidades</p>
+                        <div class="produto-preco">R$ 149,99</div>
+                        <button onclick="adicionarAoCarrinho(5)" class="btn-comprar">
+                            Adicionar ao Carrinho
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Produto 6: Jogo de Panelas -->
+                <div class="produto-card" data-categoria="casa">
+                    <img src="imagen/Jogo de Panelas.jpg" alt="Jogo de Panelas">
+                    <div class="produto-info">
+                        <h3>Jogo de Panelas</h3>
+                        <p>Kit completo de panelas antiaderentes</p>
+                        <div class="produto-preco">R$ 299,99</div>
+                        <button onclick="adicionarAoCarrinho(6)" class="btn-comprar">
+                            Adicionar ao Carrinho
+                        </button>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -82,6 +158,155 @@
     </footer>
 
     <div id="overlay" class="overlay"></div>
-    <script src="script.js"></script>
+    <script>
+        // Variáveis globais
+        let carrinho = [];
+        let categoriaAtual = 'todos';
+
+        // Função para filtrar produtos por categoria
+        function filtrarPorCategoria(categoria) {
+            categoriaAtual = categoria;
+            
+            // Atualiza os botões de categoria
+            const botoes = document.querySelectorAll('.category-btn');
+            botoes.forEach(btn => {
+                if (btn.dataset.category === categoria) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+
+            // Filtra os produtos
+            const cards = document.querySelectorAll('.produto-card');
+            cards.forEach(card => {
+                if (categoria === 'todos' || card.dataset.categoria === categoria) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // Função para adicionar produto ao carrinho
+        function adicionarAoCarrinho(id) {
+            const produto = produtos.find(p => p.id === id);
+            if (produto) {
+                carrinho.push(produto);
+                atualizarCarrinho();
+                atualizarContadorCarrinho();
+                toggleCarrinho(true);
+            }
+        }
+
+        // Função para atualizar o carrinho
+        function atualizarCarrinho() {
+            const carrinhoItems = document.getElementById('carrinho-items');
+            const totalSpan = document.getElementById('total');
+            
+            carrinhoItems.innerHTML = '';
+            
+            let total = 0;
+            
+            carrinho.forEach((produto, index) => {
+                const item = document.createElement('div');
+                item.className = 'carrinho-item';
+                item.innerHTML = `
+                    <img src="${produto.imagem}" alt="${produto.nome}">
+                    <div class="item-info">
+                        <h4>${produto.nome}</h4>
+                        <div class="item-preco">R$ ${produto.preco.toFixed(2)}</div>
+                    </div>
+                    <button onclick="removerDoCarrinho(${index})" class="btn-remover">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                `;
+                carrinhoItems.appendChild(item);
+                total += produto.preco;
+            });
+            
+            totalSpan.textContent = total.toFixed(2);
+        }
+
+        // Função para remover item do carrinho
+        function removerDoCarrinho(index) {
+            carrinho.splice(index, 1);
+            atualizarCarrinho();
+            atualizarContadorCarrinho();
+        }
+
+        // Função para atualizar o contador do carrinho
+        function atualizarContadorCarrinho() {
+            const contador = document.getElementById('cart-count');
+            contador.textContent = carrinho.length;
+        }
+
+        // Função para mostrar/esconder o carrinho
+        function toggleCarrinho(show = null) {
+            const carrinhoSidebar = document.getElementById('carrinho-sidebar');
+            const overlay = document.getElementById('overlay');
+            
+            if (show === null) {
+                carrinhoSidebar.classList.toggle('active');
+                overlay.classList.toggle('active');
+            } else if (show) {
+                carrinhoSidebar.classList.add('active');
+                overlay.classList.add('active');
+            } else {
+                carrinhoSidebar.classList.remove('active');
+                overlay.classList.remove('active');
+            }
+        }
+
+        // Configurar eventos quando a página carregar
+        document.addEventListener('DOMContentLoaded', () => {
+            // Configurar filtros de categoria
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    filtrarPorCategoria(btn.dataset.category);
+                });
+            });
+
+            // Configurar busca
+            document.getElementById('search-button').addEventListener('click', () => {
+                const searchTerm = document.getElementById('search-input').value.toLowerCase();
+                const cards = document.querySelectorAll('.produto-card');
+                
+                cards.forEach(card => {
+                    const titulo = card.querySelector('h3').textContent.toLowerCase();
+                    const descricao = card.querySelector('p').textContent.toLowerCase();
+                    
+                    if (titulo.includes(searchTerm) || descricao.includes(searchTerm)) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+
+            // Configurar fechamento do carrinho ao clicar no overlay
+            document.getElementById('overlay').addEventListener('click', () => {
+                toggleCarrinho(false);
+            });
+
+            // Configurar finalização da compra
+            document.getElementById('finalizar-compra').addEventListener('click', () => {
+                if (carrinho.length === 0) {
+                    alert('Seu carrinho está vazio!');
+                    return;
+                }
+                
+                const total = carrinho.reduce((sum, produto) => sum + produto.preco, 0);
+                alert(`Compra finalizada com sucesso!\nTotal: R$ ${total.toFixed(2)}`);
+                carrinho = [];
+                atualizarCarrinho();
+                atualizarContadorCarrinho();
+                toggleCarrinho(false);
+            });
+
+            // Inicializar contador do carrinho
+            atualizarContadorCarrinho();
+        });
+    </script>
 </body>
 </html>

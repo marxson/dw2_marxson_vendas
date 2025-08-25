@@ -1,84 +1,72 @@
-// Dados dos produtos (simulando um banco de dados)
-const produtos = [
-    {
-        id: 1,
-        nome: 'Smartphone XYZ',
-        preco: 1299.99,
-        imagem: 'imagen/Smartphone XYZ.jpg',
-        descricao: 'Smartphone último modelo com câmera de alta resolução',
-        categoria: 'eletronicos'
-    },
-    {
-        id: 2,
-        nome: 'Notebook Pro',
-        preco: 4499.99,
-        imagem: 'imagen/Notebook Pro.jpg',
-        descricao: 'Notebook profissional com processador de última geração',
-        categoria: 'eletronicos'
-    },
-    {
-        id: 3,
-        nome: 'Camiseta Casual',
-        preco: 49.99,
-        imagem: 'imagen/Camiseta Casual.jpg',
-        descricao: 'Camiseta confortável para o dia a dia',
-        categoria: 'moda'
-    },
-    {
-        id: 4,
-        nome: 'Tênis Esportivo',
-        preco: 199.99,
-        imagem: 'imagen/Tênis Esportivo.jpg',
-        descricao: 'Tênis ideal para práticas esportivas',
-        categoria: 'moda'
-    },
-    {
-        id: 5,
-        nome: 'Liquidificador Multi',
-        preco: 149.99,
-        imagem: 'imagen/Liquidificador Multi.jpg',
-        descricao: 'Liquidificador com múltiplas velocidades',
-        categoria: 'casa'
-    },
-    {
-        id: 6,
-        nome: 'Jogo de Panelas',
-        preco: 299.99,
-        imagem: 'imagen/Jogo de Panelas.jpg',
-        descricao: 'Kit completo de panelas antiaderentes',
-        categoria: 'casa'
+// Variáveis globais
+let carrinho = [];
+let categoriaAtual = 'todos';
+
+// Função para buscar produtos da API
+async function buscarProdutos() {
+    try {
+        const response = await fetch(`${API_URL}/produtos`);
+        if (!response.ok) {
+            throw new Error('Erro ao buscar produtos');
+        }
+        return await response.json();
+    } catch (error) {
+        console.error('Erro:', error);
+        return [];
     }
-];
+}
+
+// Função para finalizar a compra na API
+async function finalizarCompraAPI(itens) {
+    try {
+        const response = await fetch(`${API_URL}/vendas`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                itens: itens.map(item => ({
+                    produto_id: item.id,
+                    quantidade: 1,
+                    preco_unitario: item.preco
+                }))
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error('Erro ao finalizar compra');
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error('Erro:', error);
+        throw error;
+    }
+}
+
+// Cache de produtos
+let produtos = [];
 
 // Carrinho de compras
 let carrinho = [];
 let categoriaAtual = 'todos';
 
-// Função para exibir os produtos na página
-function exibirProdutos() {
-    const produtosGrid = document.getElementById('produtos-grid');
-    produtosGrid.innerHTML = '';
-
-    const produtosFiltrados = categoriaAtual === 'todos' 
-        ? produtos 
-        : produtos.filter(p => p.categoria === categoriaAtual);
-
-    produtosFiltrados.forEach(produto => {
-        const produtoCard = document.createElement('div');
-        produtoCard.className = 'produto-card';
-        produtoCard.innerHTML = `
-            <img src="${produto.imagem}" alt="${produto.nome}">
-            <div class="produto-info">
-                <h3>${produto.nome}</h3>
-                <p>${produto.descricao}</p>
-                <div class="produto-preco">R$ ${produto.preco.toFixed(2)}</div>
-                <button onclick="adicionarAoCarrinho(${produto.id})" class="btn-comprar">
-                    Adicionar ao Carrinho
-                </button>
-            </div>
-        `;
-        produtosGrid.appendChild(produtoCard);
+// Função para filtrar os produtos
+function filtrarProdutos() {
+    const cards = document.querySelectorAll('.produto-card');
+    
+    cards.forEach(card => {
+        const categoria = card.getAttribute('data-categoria');
+        if (categoriaAtual === 'todos' || categoria === categoriaAtual) {
+            card.style.display = 'block';
+        } else {
+            card.style.display = 'none';
+        }
     });
+    } catch (error) {
+        produtosGrid.innerHTML = '<p>Erro ao carregar produtos. Tente novamente mais tarde.</p>';
+        console.error('Erro ao exibir produtos:', error);
+    }
 }
 
 // Função para adicionar produto ao carrinho
@@ -166,18 +154,33 @@ function filtrarPorCategoria(categoria) {
 }
 
 // Função para finalizar a compra
-document.getElementById('finalizar-compra').addEventListener('click', () => {
+document.getElementById('finalizar-compra').addEventListener('click', async () => {
     if (carrinho.length === 0) {
         alert('Seu carrinho está vazio!');
         return;
     }
     
-    const total = carrinho.reduce((sum, produto) => sum + produto.preco, 0);
-    alert(`Compra finalizada com sucesso!\nTotal: R$ ${total.toFixed(2)}`);
-    carrinho = [];
-    atualizarCarrinho();
-    atualizarContadorCarrinho();
-    toggleCarrinho(false);
+    try {
+        const total = carrinho.reduce((sum, produto) => sum + produto.preco, 0);
+        
+        // Envia a compra para a API
+        const resultado = await finalizarCompraAPI(carrinho);
+        
+        alert(`Compra finalizada com sucesso!\nTotal: R$ ${total.toFixed(2)}`);
+        
+        // Limpa o carrinho e atualiza a interface
+        carrinho = [];
+        atualizarCarrinho();
+        atualizarContadorCarrinho();
+        toggleCarrinho(false);
+        
+        // Atualiza a lista de produtos para refletir o novo estoque
+        produtos = await buscarProdutos();
+        exibirProdutos();
+    } catch (error) {
+        alert('Erro ao finalizar a compra. Tente novamente.');
+        console.error('Erro ao finalizar compra:', error);
+    }
 });
 
 // Configurar filtros de categoria

@@ -153,6 +153,12 @@ body {
     margin: 0.5rem 0;
 }
 
+.produto-estoque {
+    color: #666;
+    font-size: 14px;
+    margin: 0.5rem 0;
+}
+
 .btn-comprar {
     width: 100%;
     padding: 0.8rem;
@@ -166,6 +172,11 @@ body {
 
 .btn-comprar:hover {
     background-color: #2968c8;
+}
+
+.btn-comprar:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
 }
 
 /* Carrinho Sidebar */
